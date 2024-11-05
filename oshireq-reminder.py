@@ -72,18 +72,21 @@ def post_reminder(song: Song, index: int):
     text = construct_text(song, index)
     twitter.create_tweet(text=text)
 
+def setup_jobs(song: Song):
+    schedule.every().day.at("08:00").do(post_reminder, song=song, index=2)
+    schedule.every().day.at("12:00").do(post_reminder, song=song, index=2)
+    schedule.every().day.at("15:00").do(post_reminder, song=song, index=3)
+    schedule.every().day.at("18:00").do(post_reminder, song=song, index=0)
+    schedule.every().day.at("21:00").do(post_reminder, song=song, index=1)
+    schedule.every().day.at("23:00").do(post_reminder, song=song, index=1)
+
 def main():
     with open(SONGS_PATH, "r") as f:
         songs: list[Song] = json.load(f)
         songs.sort(key=lambda e: datetime.strptime(e["release_date"], "%Y-%m-%d"))
     latest_song = songs[-1]
 
-    schedule.every().day.at("08:00").do(post_reminder, song=latest_song, index=2)
-    schedule.every().day.at("12:00").do(post_reminder, song=latest_song, index=2)
-    schedule.every().day.at("15:00").do(post_reminder, song=latest_song, index=3)
-    schedule.every().day.at("18:00").do(post_reminder, song=latest_song, index=0)
-    schedule.every().day.at("21:00").do(post_reminder, song=latest_song, index=1)
-    schedule.every().day.at("23:00").do(post_reminder, song=latest_song, index=1)
+    setup_jobs(latest_song)
 
     while True:
         schedule.run_pending()
