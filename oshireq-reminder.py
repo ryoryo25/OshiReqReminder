@@ -77,7 +77,6 @@ def main():
         songs: list[Song] = json.load(f)
         songs.sort(key=lambda e: datetime.strptime(e["release_date"], "%Y-%m-%d"))
     latest_song = songs[-1]
-    # post_reminder(latest_song, 0)
 
     schedule.every().day.at("08:00").do(post_reminder, song=latest_song, index=2)
     schedule.every().day.at("12:00").do(post_reminder, song=latest_song, index=2)
