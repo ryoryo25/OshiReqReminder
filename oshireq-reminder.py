@@ -47,14 +47,18 @@ https://usen.oshireq.com/song/{id}
 
 EXTRA_TEXTS = [
     """18時になりました！
-今日も投票しちゃいましょう！""",
+今日も投票しちゃいましょう！""", # 18:00
     """もう今日の分の投票はお済みですか？
-まだの方は今のうちに投票しちゃいましょう！""",
+まだの方は今のうちに投票しちゃいましょう！""", # 21:00
+    """もう今日の分の投票はお済みですか？
+まだの方は寝る前に投票しちゃいましょう！""", # 23:00
     """昨日の分の投票はお済みですか？
-まだの方は今のうちに投票しちゃいましょう！""",
+まだの方は朝のうちに投票しちゃいましょう！""", # 8:00
+    """昨日の分の投票はお済みですか？
+まだの方はお昼のうちに投票しちゃいましょう！""", # 12:00
     """もうそろそろ投票回数がリセットされます！
 昨日の分の投票はお済みですか？
-まだの方は今のうちに投票しちゃいましょう！"""
+まだの方は今のうちに投票しちゃいましょう！""" # 15:00
 ]
 
 def construct_text(song: Song, index: int):
@@ -73,12 +77,12 @@ def post_reminder(song: Song, index: int):
     twitter.create_tweet(text=text)
 
 def setup_jobs(song: Song):
-    schedule.every().day.at("08:00").do(post_reminder, song=song, index=2)
-    schedule.every().day.at("12:00").do(post_reminder, song=song, index=2)
-    schedule.every().day.at("15:00").do(post_reminder, song=song, index=3)
+    schedule.every().day.at("08:00").do(post_reminder, song=song, index=3)
+    schedule.every().day.at("12:00").do(post_reminder, song=song, index=4)
+    schedule.every().day.at("15:00").do(post_reminder, song=song, index=5)
     schedule.every().day.at("18:00").do(post_reminder, song=song, index=0)
     schedule.every().day.at("21:00").do(post_reminder, song=song, index=1)
-    schedule.every().day.at("23:00").do(post_reminder, song=song, index=1)
+    schedule.every().day.at("23:00").do(post_reminder, song=song, index=2)
 
 def main():
     with open(SONGS_PATH, "r") as f:
