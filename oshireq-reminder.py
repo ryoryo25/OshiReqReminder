@@ -74,7 +74,10 @@ def construct_text(song: Song, index: int):
 
 def post_reminder(song: Song, index: int):
     text = construct_text(song, index)
-    twitter.create_tweet(text=text)
+    try:
+        twitter.create_tweet(text=text)
+    except Exception as e:
+        print(e)
 
 def setup_jobs(song: Song):
     schedule.every().day.at("08:00").do(post_reminder, song=song, index=3)
@@ -90,8 +93,8 @@ def main():
         songs.sort(key=lambda e: datetime.strptime(e["release_date"], "%Y-%m-%d"))
     latest_song = songs[-1]
 
+    print("Start reminding...")
     setup_jobs(latest_song)
-
     while True:
         schedule.run_pending()
         time.sleep(1)
